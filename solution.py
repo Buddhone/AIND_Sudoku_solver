@@ -9,6 +9,7 @@ unitlist = row_units + column_units + square_units
 
 # TODO: Update the unit list to add the new diagonal units
 
+# First create a reversed copy of the columns to be used for diag2
 cols_rev = cols[::-1]
 
 diag1 = [r + c for r in rows for c in cols if cols.index(c) == rows.index(r)]
@@ -54,19 +55,24 @@ def naked_twins(values):
     and because it is simpler (since the reduce_puzzle function already calls this
     strategy repeatedly).
     """
-    # TODO: Implement this function!
+    # The approach is to consider only the boxes that could be naked twins
+    
     possible_twins = [box for box in values.keys() if len(values[box]) == 2]
+    
+    # Set constraints to the boxes so that we will obtain the naked twins
 
     twins = [[box1,box2] for box1 in possible_twins for box2 in peers[box1] if set(values[box1])==set(values[box2])]
     
+    # Find all the peers of the naked twins and their intersection
     for box1, box2 in twins:
 
         peers1 = peers[box1]
         peers2 = peers[box2]
-
+        
+        # The intersection is needed to avoid removing values where they shouldn't be removed
         peers_int = peers1.intersection(peers2)
 
-        # delete the two digits from all common peers
+        # Removing the values from the peers in the naked twins intersections 
         for peer in peers_int:
             for to_remove in values[box1]:
                 values = assign_value(values, peer, values[peer].replace(to_remove,''))
